@@ -34,7 +34,7 @@ class FlavorConfig {
   final List<KeyboardThemeData> keyboardThemes;
 
   static FlavorConfig? _instance;
-  static const MethodChannel _channel = MethodChannel('keyboard_theme/config');
+  static const String _channelName = 'keyboard_theme/config';
 
   static FlavorConfig get instance {
     final config = _instance;
@@ -53,12 +53,14 @@ class FlavorConfig {
   /// Attempts to load the flavor configuration from the native platform.
   /// Throws if the platform is unavailable.
   static Future<FlavorConfig> fromPlatform() async {
+    WidgetsFlutterBinding.ensureInitialized();
     if (kIsWeb) {
       throw UnsupportedError(
         'Platform-driven flavor configs are not available on web builds.',
       );
     }
-    final jsonString = await _channel.invokeMethod<String>('getConfig');
+    const channel = MethodChannel(_channelName);
+    final jsonString = await channel.invokeMethod<String>('getConfig');
     if (jsonString == null || jsonString.isEmpty) {
       throw const FormatException('Received empty config payload.');
     }
