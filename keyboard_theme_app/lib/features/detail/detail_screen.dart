@@ -29,6 +29,8 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
   bool _hasPromptedKeyboardActivation = false;
   final FavoritesService _favoritesService = FavoritesService();
   final KeyboardThemeService _keyboardThemeService = KeyboardThemeService();
+  final TextEditingController _previewController = TextEditingController();
+  final FocusNode _previewFocusNode = FocusNode();
 
   String get _effectiveThemeAssetPath {
     final path = widget.themeAssetPath;
@@ -200,6 +202,101 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
     );
   }
 
+  void _showKeyboardPreview() {
+    if (!_isKeyboardEnabled || !_isKeyboardSelected) {
+      _showKeyboardActivationSheet();
+      return;
+    }
+
+    _previewController.clear();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return GestureDetector(
+          onTap: () => FocusScope.of(sheetContext).unfocus(),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+            ),
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 50,
+                    height: 5,
+                    margin: EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                Text(
+                  'Try the Keyboard Theme',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Type below to preview how your keyboard looks with this theme.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                SizedBox(height: 16),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    controller: _previewController,
+                    focusNode: _previewFocusNode,
+                    autofocus: true,
+                    style: TextStyle(fontSize: 16),
+                    maxLines: 3,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Start typing here…',
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(sheetContext).pop(),
+                    child: Text('Done'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).whenComplete(() {
+      _previewFocusNode.unfocus();
+    });
+  }
+
   Future<void> _checkFavoriteStatus() async {
     final isFav = await _favoritesService.isFavorite(widget.imageUrl);
     setState(() {
@@ -256,6 +353,8 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _previewController.dispose();
+    _previewFocusNode.dispose();
     super.dispose();
   }
 
@@ -798,7 +897,7 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
                           width: 54,
                           height: 54,
                           child: ElevatedButton(
-                            onPressed: () => _showDownloadOptions(),
+                            onPressed: _showKeyboardPreview,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white.withOpacity(0.2),
                               foregroundColor: Colors.white,
@@ -809,7 +908,7 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
                               ),
                               padding: EdgeInsets.zero,
                             ),
-                            child: Icon(Icons.download_rounded, size: 24),
+                            child: Icon(Icons.keyboard, size: 24),
                           ),
                         ),
                         SizedBox(width: 12),
