@@ -1,4 +1,4 @@
-package com.example.keyboard_theme_app
+package keyboard.keyboardtheme.free.theme.custom.personalkeyboard
 
 import io.flutter.embedding.android.FlutterActivity
 

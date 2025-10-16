@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.keyboard_theme_app"
+    namespace = "keyboard.keyboardtheme.free.theme.custom.personalkeyboard"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,14 +20,32 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.keyboard_theme_app"
+        applicationId = "keyboard.keyboardtheme.free.theme.custom.personalkeyboard"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        resValue("string", "app_name", "Keyboard Theme")
+        manifestPlaceholders["admobAppId"] = "ca-app-pub-xxxxxxxxxxxxxxxx~default"
+    }
+
+    flavorDimensions += "brand"
+
+    productFlavors {
+        create("kpopdemon") {
+            dimension = "brand"
+            applicationId = "keyboard.keyboardtheme.free.theme.custom.personalkeyboard.kpopdemon"
+            resValue("string", "app_name", "KPOP Demon Keyboard")
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-xxxxxxxxxxxxxxxx~kpopdemon"
+        }
+        create("blackpink") {
+            dimension = "brand"
+            applicationId = "keyboard.keyboardtheme.free.theme.custom.personalkeyboard.blackpink"
+            resValue("string", "app_name", "BLACKPINK Keyboard")
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-xxxxxxxxxxxxxxxx~blackpink"
+        }
     }
 
     buildTypes {
