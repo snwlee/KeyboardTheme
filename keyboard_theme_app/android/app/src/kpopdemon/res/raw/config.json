@@ -6,8 +6,8 @@
   "primaryColor": "#311B92",
   "keyboardLocales": ["ko", "en", "ja"],
   "admob": {
-    "appId": "ca-app-pub-xxxxxxxxxxxxxxxx~kpopdemon",
-    "bannerId": "ca-app-pub-xxxxxxxxxxxxxxxx/kpopdemonBanner",
-    "interstitialId": "ca-app-pub-xxxxxxxxxxxxxxxx/kpopdemonInterstitial"
+    "appId": "ca-app-pub-3940256099942544~3347511713",
+    "bannerId": "ca-app-pub-3940256099942544/6300978111",
+    "interstitialId": "ca-app-pub-3940256099942544/1033173712"
   }
 }

@@ -63,11 +63,6 @@ class FlavorConfig {
     return FlavorConfig.fromJson(data);
   }
 
-  /// Fallback to compile-time presets when running on unsupported platforms.
-  static FlavorConfig fallback(String name) {
-    return _fallbacks[name] ?? _fallbacks['main'] ?? _fallbacks.values.first;
-  }
-
   factory FlavorConfig.fromJson(Map<String, dynamic> json) {
     final admob = json['admob'] as Map<String, dynamic>? ?? const {};
     final List<dynamic> localesRaw = json['keyboardLocales'] as List<dynamic>? ?? const [];
@@ -88,83 +83,6 @@ class FlavorConfig {
           .toList(growable: false),
     );
   }
-
-  static FlavorConfig _preset({
-    required String flavorName,
-    required String appName,
-    required String packageName,
-    required String assetPrefix,
-    required String admobAppId,
-    required String admobBannerId,
-    required String admobInterstitialId,
-    required Color primaryColor,
-    required List<Locale> locales,
-  }) {
-    return FlavorConfig(
-      flavorName: flavorName,
-      appName: appName,
-      packageName: packageName,
-      assetPrefix: assetPrefix,
-      admobAppId: admobAppId,
-      admobBannerId: admobBannerId,
-      admobInterstitialId: admobInterstitialId,
-      primaryColor: primaryColor,
-      keyboardLocales: locales,
-    );
-  }
-
-  static final Map<String, FlavorConfig> _fallbacks = {
-    'kpopdemon': _preset(
-      flavorName: 'kpopdemon',
-      appName: 'KPOP Demon Keyboard',
-      packageName:
-          'keyboard.keyboardtheme.free.theme.custom.personalkeyboard.kpopdemon',
-      assetPrefix: 'assets/kpopdemon',
-      admobAppId: 'ca-app-pub-xxxxxxxxxxxxxxxx~kpopdemon',
-      admobBannerId: 'ca-app-pub-xxxxxxxxxxxxxxxx/kpopdemonBanner',
-      admobInterstitialId:
-          'ca-app-pub-xxxxxxxxxxxxxxxx/kpopdemonInterstitial',
-      primaryColor: const Color(0xFF311B92),
-      locales: const [
-        Locale('ko'),
-        Locale('en'),
-        Locale('ja'),
-      ],
-    ),
-    'blackpink': _preset(
-      flavorName: 'blackpink',
-      appName: 'BLACKPINK Keyboard',
-      packageName:
-          'keyboard.keyboardtheme.free.theme.custom.personalkeyboard.blackpink',
-      assetPrefix: 'assets/blackpink',
-      admobAppId: 'ca-app-pub-xxxxxxxxxxxxxxxx~blackpink',
-      admobBannerId: 'ca-app-pub-xxxxxxxxxxxxxxxx/blackpinkBanner',
-      admobInterstitialId:
-          'ca-app-pub-xxxxxxxxxxxxxxxx/blackpinkInterstitial',
-      primaryColor: const Color(0xFF880E4F),
-      locales: const [
-        Locale('ko'),
-        Locale('en'),
-        Locale('th'),
-      ],
-    ),
-    'main': _preset(
-      flavorName: 'main',
-      appName: 'Keyboard Theme',
-      packageName:
-          'keyboard.keyboardtheme.free.theme.custom.personalkeyboard',
-      assetPrefix: 'assets/common',
-      admobAppId: 'ca-app-pub-xxxxxxxxxxxxxxxx~default',
-      admobBannerId: 'ca-app-pub-xxxxxxxxxxxxxxxx/mainBanner',
-      admobInterstitialId:
-          'ca-app-pub-xxxxxxxxxxxxxxxx/mainInterstitial',
-      primaryColor: const Color(0xFF512DA8),
-      locales: const [
-        Locale('en'),
-        Locale('ko'),
-      ],
-    ),
-  };
 
   static Color _parseColor(String value) {
     final buffer = StringBuffer();

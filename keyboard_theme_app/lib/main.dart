@@ -1,14 +1,16 @@
+import 'package:flutter/foundation.dart';
+
 import 'bootstrap.dart';
 import 'flavors/flavor_config.dart';
 
 Future<void> main() async {
-  FlavorConfig config;
   try {
-    config = await FlavorConfig.fromPlatform();
-  } catch (_) {
-    const fallbackFlavor =
-        String.fromEnvironment('FLAVOR', defaultValue: 'main');
-    config = FlavorConfig.fallback(fallbackFlavor);
+    final config = await FlavorConfig.fromPlatform();
+    await bootstrap(config);
+  } catch (error, stackTrace) {
+    debugPrint(
+      'Failed to load flavor configuration: $error\n$stackTrace',
+    );
+    rethrow;
   }
-  await bootstrap(config);
 }

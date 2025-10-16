@@ -6,8 +6,8 @@
   "primaryColor": "#880E4F",
   "keyboardLocales": ["ko", "en", "th"],
   "admob": {
-    "appId": "ca-app-pub-xxxxxxxxxxxxxxxx~blackpink",
-    "bannerId": "ca-app-pub-xxxxxxxxxxxxxxxx/blackpinkBanner",
-    "interstitialId": "ca-app-pub-xxxxxxxxxxxxxxxx/blackpinkInterstitial"
+    "appId": "ca-app-pub-3940256099942544~3347511713",
+    "bannerId": "ca-app-pub-3940256099942544/6300978111",
+    "interstitialId": "ca-app-pub-3940256099942544/1033173712"
   }
 }
