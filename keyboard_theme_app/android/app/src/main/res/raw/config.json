@@ -9,5 +9,18 @@
     "appId": "ca-app-pub-3940256099942544~3347511713",
     "bannerId": "ca-app-pub-3940256099942544/6300978111",
     "interstitialId": "ca-app-pub-3940256099942544/1033173712"
-  }
+  },
+  "keyboardThemes": [
+    {
+      "id": "classic-night",
+      "name": "Classic Night",
+      "description": "Deep indigo base with cyan accents for a balanced dark theme.",
+      "backgroundColor": "#110038",
+      "keyColor": "#2C1C7C",
+      "secondaryKeyColor": "#4230B4",
+      "accentColor": "#00E5FF",
+      "keyTextColor": "#FFFFFF",
+      "backgroundImage": "background_glow.png"
+    }
+  ]
 }

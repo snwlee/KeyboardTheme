@@ -10,6 +10,28 @@ Flutter keyboard theme application scaffolded with Android product flavors so ea
 | `blackpink` | `keyboard.keyboardtheme.free.theme.custom.personalkeyboard.blackpink`           | BLACKPINK Keyboard     | `assets/blackpink/`   |
 
 Every flavor has its own launcher icon (`android/app/src/<flavor>/res/...`) and configuration file at `android/app/src/<flavor>/res/raw/config.json`. Update the JSON to change package name, display name, asset root, keyboard locales, or AdMob identifiers for that flavor. The build script reads these values to set Gradle properties, and the Flutter layer loads the same JSON via a platform channel at runtime.
+
+## Keyboard Themes
+
+Keyboard themes are also declared in the flavor JSON under the `keyboardThemes` array. Each entry controls how the Flutter UI renders the preview keyboard (colors, optional background image, description, etc.). Example snippet:
+
+```json
+"keyboardThemes": [
+  {
+    "id": "pink-venom",
+    "name": "Pink Venom",
+    "description": "Sleek black glass keys with neon pink venom accents.",
+    "backgroundColor": "#12000A",
+    "keyColor": "#311524",
+    "secondaryKeyColor": "#4D2036",
+    "accentColor": "#FF4FA3",
+    "keyTextColor": "#FFFFFF",
+    "backgroundImage": "background_glow.png"
+  }
+]
+```
+
+`backgroundImage` is resolved relative to the flavor’s `assetPrefix`, so the example above loads `assets/blackpink/background_glow.png`. Add new PNG/graphics per flavor as needed; the preview automatically updates to reflect the configuration.
 ## Localization
 
 The app ships with English and Korean ARB files under `lib/l10n/`. Add new locales by creating another `app_<languageCode>.arb` and re-running the localization tool:
