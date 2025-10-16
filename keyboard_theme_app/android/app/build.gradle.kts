@@ -193,6 +193,9 @@ flutter {
 dependencies {
     implementation(kotlin("stdlib-jdk7"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("com.google.android.gms:play-services-ads:23.0.0")
+    implementation("androidx.emoji2:emoji2:1.4.0")
+    implementation("androidx.emoji2:emoji2-bundled:1.4.0")
 }

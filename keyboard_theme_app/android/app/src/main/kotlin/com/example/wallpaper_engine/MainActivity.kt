@@ -5,6 +5,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.NonNull
@@ -44,9 +49,22 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
+        KeyboardLocaleManager.ensureSelectionsValid(getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE))
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, KEYBOARD_THEME_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
+                    "getEnabledLocales" -> {
+                        val prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                        val locales = KeyboardLocaleManager.getSelectedLocales(prefs)
+                        result.success(locales)
+                    }
+                    "setEnabledLocales" -> {
+                        val prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                        val locales = call.argument<List<String>>("locales") ?: emptyList()
+                        KeyboardLocaleManager.saveSelectedLocales(prefs, locales)
+                        result.success(null)
+                    }
                     "applyKeyboardTheme" -> {
                         if (isFinishing || isDestroyed) {
                             result.error("ACTIVITY_DESTROYED", "Activity is no longer valid", null)
@@ -64,18 +82,106 @@ class MainActivity : FlutterActivity() {
 
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
-                                val normalizedMode = mode.lowercase()
+                                val normalizedMode = when (mode.lowercase()) {
+                                    "dark" -> "dark"
+                                    "both" -> "both"
+                                    "light" -> "light"
+                                    else -> "light"
+                                }
                                 val prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                                 val lightFile = File(filesDir, "keyboard_theme_light.png")
                                 val darkFile = File(filesDir, "keyboard_theme_dark.png")
                                 val legacyFile = File(filesDir, "keyboard_theme.png")
 
-                                fun writeTheme(target: File): String {
+                                val sourceBitmap = BitmapFactory.decodeByteArray(
+                                    themeBytes,
+                                    0,
+                                    themeBytes.size
+                                ) ?: throw IllegalArgumentException("Unable to decode theme image")
+
+                                fun saveTheme(target: File, bitmap: Bitmap): String {
                                     FileOutputStream(target).use { stream ->
-                                        stream.write(themeBytes)
+                                        if (!bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)) {
+                                            throw IllegalStateException("Unable to encode theme image")
+                                        }
                                         stream.flush()
                                     }
                                     return target.absolutePath
+                                }
+
+                                fun createLightVariant(source: Bitmap): Bitmap {
+                                    if (source.width == 0 || source.height == 0) {
+                                        return source.copy(
+                                            source.config ?: Bitmap.Config.ARGB_8888,
+                                            true
+                                        )
+                                    }
+                                    val result = Bitmap.createBitmap(
+                                        source.width,
+                                        source.height,
+                                        Bitmap.Config.ARGB_8888
+                                    )
+                                    val canvas = Canvas(result)
+                                    canvas.drawBitmap(source, 0f, 0f, null)
+                                    val overlayPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                        color = Color.argb((0.18f * 255).toInt(), 255, 255, 255)
+                                    }
+                                    canvas.drawRect(
+                                        0f,
+                                        0f,
+                                        result.width.toFloat(),
+                                        result.height.toFloat(),
+                                        overlayPaint
+                                    )
+                                    return result
+                                }
+
+                                fun createDarkVariant(source: Bitmap): Bitmap {
+                                    if (source.width == 0 || source.height == 0) {
+                                        return source.copy(
+                                            source.config ?: Bitmap.Config.ARGB_8888,
+                                            true
+                                        )
+                                    }
+                                    val result = Bitmap.createBitmap(
+                                        source.width,
+                                        source.height,
+                                        Bitmap.Config.ARGB_8888
+                                    )
+                                    val canvas = Canvas(result)
+                                    canvas.drawBitmap(source, 0f, 0f, null)
+                                    val overlayPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                        color = Color.argb((0.45f * 255).toInt(), 0, 0, 0)
+                                    }
+                                    canvas.drawRect(
+                                        0f,
+                                        0f,
+                                        result.width.toFloat(),
+                                        result.height.toFloat(),
+                                        overlayPaint
+                                    )
+                                    return result
+                                }
+
+                                var lightBitmap: Bitmap? = null
+                                var darkBitmap: Bitmap? = null
+                                fun obtainLightVariant(): Bitmap {
+                                    val existing = lightBitmap
+                                    if (existing != null) {
+                                        return existing
+                                    }
+                                    val generated = createLightVariant(sourceBitmap)
+                                    lightBitmap = generated
+                                    return generated
+                                }
+                                fun obtainDarkVariant(): Bitmap {
+                                    val existing = darkBitmap
+                                    if (existing != null) {
+                                        return existing
+                                    }
+                                    val generated = createDarkVariant(sourceBitmap)
+                                    darkBitmap = generated
+                                    return generated
                                 }
 
                                 val editor = prefs.edit()
@@ -83,18 +189,19 @@ class MainActivity : FlutterActivity() {
 
                                 when (normalizedMode) {
                                     "light" -> {
-                                        primaryPath = writeTheme(lightFile)
+                                        primaryPath = saveTheme(lightFile, obtainLightVariant())
                                         editor.putString(CURRENT_LIGHT_THEME_PATH_KEY, primaryPath)
                                         editor.putString(CURRENT_LIGHT_THEME_ASSET_KEY, assetPath)
                                     }
                                     "dark" -> {
-                                        primaryPath = writeTheme(darkFile)
-                                        editor.putString(CURRENT_DARK_THEME_PATH_KEY, primaryPath)
+                                        val darkPath = saveTheme(darkFile, obtainDarkVariant())
+                                        primaryPath = darkPath
+                                        editor.putString(CURRENT_DARK_THEME_PATH_KEY, darkPath)
                                         editor.putString(CURRENT_DARK_THEME_ASSET_KEY, assetPath)
                                     }
                                     "both" -> {
-                                        val lightPath = writeTheme(lightFile)
-                                        val darkPath = writeTheme(darkFile)
+                                        val lightPath = saveTheme(lightFile, obtainLightVariant())
+                                        val darkPath = saveTheme(darkFile, obtainDarkVariant())
                                         primaryPath = lightPath
                                         editor.putString(CURRENT_LIGHT_THEME_PATH_KEY, lightPath)
                                         editor.putString(CURRENT_LIGHT_THEME_ASSET_KEY, assetPath)
@@ -102,8 +209,8 @@ class MainActivity : FlutterActivity() {
                                         editor.putString(CURRENT_DARK_THEME_ASSET_KEY, assetPath)
                                     }
                                     else -> {
-                                        val lightPath = writeTheme(lightFile)
-                                        val darkPath = writeTheme(darkFile)
+                                        val lightPath = saveTheme(lightFile, obtainLightVariant())
+                                        val darkPath = saveTheme(darkFile, obtainDarkVariant())
                                         primaryPath = lightPath
                                         editor.putString(CURRENT_LIGHT_THEME_PATH_KEY, lightPath)
                                         editor.putString(CURRENT_LIGHT_THEME_ASSET_KEY, assetPath)
@@ -113,17 +220,33 @@ class MainActivity : FlutterActivity() {
                                 }
 
                                 // Always keep legacy path for backwards compatibility
-                                primaryPath = primaryPath ?: writeTheme(legacyFile)
+                                if (primaryPath == null) {
+                                    primaryPath = saveTheme(legacyFile, sourceBitmap)
+                                }
                                 editor.putString(CURRENT_THEME_PATH_KEY, primaryPath)
                                 editor.putString(CURRENT_THEME_ASSET_KEY, assetPath)
                                 editor.putString(
                                     CURRENT_THEME_MODE_KEY,
                                     when (normalizedMode) {
                                         "light", "dark", "both" -> normalizedMode
-                                        else -> "both"
+                                        else -> "light"
                                     }
                                 )
                                 editor.apply()
+
+                                if (!sourceBitmap.isRecycled) {
+                                    sourceBitmap.recycle()
+                                }
+                                lightBitmap?.let { bitmap ->
+                                    if (!bitmap.isRecycled) {
+                                        bitmap.recycle()
+                                    }
+                                }
+                                darkBitmap?.let { bitmap ->
+                                    if (!bitmap.isRecycled) {
+                                        bitmap.recycle()
+                                    }
+                                }
 
                                 withContext(Dispatchers.Main) {
                                     result.success(primaryPath)

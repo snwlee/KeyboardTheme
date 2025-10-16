@@ -117,18 +117,15 @@ class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderSt
     );
   }
 
-  Widget _buildFavoritesGrid() {
-    return GridView.builder(
-      padding: EdgeInsets.all(8),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.6,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-      ),
+  Widget _buildFavoritesList() {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(vertical: 8),
       itemCount: _favorites.length,
       itemBuilder: (context, index) {
         final imagePath = _favorites[index];
+        final isSquare = _isSquarePreview(imagePath);
+        final aspectRatio = isSquare ? 1.2 : 16 / 9;
+
         return GestureDetector(
           onTap: () {
             Navigator.push(
@@ -143,7 +140,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderSt
                   return FadeTransition(opacity: animation, child: child);
                 },
               ),
-            ).then((_) => _loadFavorites()); // Refresh when coming back
+            ).then((_) => _loadFavorites());
           },
           onLongPress: () {
             showDialog(
@@ -172,59 +169,118 @@ class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderSt
             );
           },
           child: Card(
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             clipBehavior: Clip.antiAlias,
             elevation: 4,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(18),
             ),
-            child: Stack(
-              children: [
-                Hero(
-                  tag: imagePath,
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.broken_image, color: Colors.grey, size: 32),
-                          SizedBox(height: 8),
-                          Text('Image not found', 
-                               style: TextStyle(color: Colors.grey, fontSize: 12)),
-                        ],
+            child: AspectRatio(
+              aspectRatio: aspectRatio,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Hero(
+                      tag: imagePath,
+                      child: Image.asset(
+                        imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[300],
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.broken_image, color: Colors.grey, size: 32),
+                              SizedBox(height: 8),
+                              Text(
+                                'Image not found',
+                                style: TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.9),
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: _buildThemeBadge(),
+                  ),
+                  Positioned(
+                    bottom: 12,
+                    right: 12,
+                    child: InkWell(
+                      onTap: () => _removeFavorite(imagePath),
                       borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.favorite, color: Colors.white, size: 20),
-                      onPressed: () => _removeFavorite(imagePath),
-                      constraints: BoxConstraints.tightFor(width: 36, height: 36),
-                      padding: EdgeInsets.zero,
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          Icons.favorite,
+                          color: Colors.redAccent,
+                          size: 18,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
       },
     );
+  }
+
+  Widget _buildThemeBadge() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.15)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.style_outlined, color: Colors.white, size: 14),
+          SizedBox(width: 6),
+          Text(
+            'Theme Ready',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _isSquarePreview(String path) {
+    final segments = path.split('/');
+    if (segments.length > 4) {
+      final possibleCategory = segments[3];
+      if (possibleCategory == 'profile') {
+        return true;
+      }
+      if (segments.length > 5 && segments[4] == 'profile') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  String _deriveThemeAssetPath(String previewPath) {
+    if (previewPath.contains('/thumbnails/')) {
+      return previewPath.replaceFirst('/thumbnails/', '/keyboard_themes/');
+    }
+    return previewPath;
   }
 
   @override
@@ -271,7 +327,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderSt
                         ? _buildEmptyState()
                         : RefreshIndicator(
                             onRefresh: _loadFavorites,
-                            child: _buildFavoritesGrid(),
+                            child: _buildFavoritesList(),
                           ),
                   ),
           ),
@@ -285,10 +341,3 @@ class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderSt
     );
   }
 }
-
-  String _deriveThemeAssetPath(String previewPath) {
-    if (previewPath.contains('/thumbnails/')) {
-      return previewPath.replaceFirst('/thumbnails/', '/keyboard_themes/');
-    }
-    return previewPath;
-  }

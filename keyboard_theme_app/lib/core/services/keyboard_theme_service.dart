@@ -7,7 +7,7 @@ class KeyboardThemeService {
 
   Future<void> applyKeyboardTheme(
     String assetPath, {
-    String mode = 'both',
+    String mode = 'light',
   }) async {
     try {
       final ByteData themeData = await rootBundle.load(assetPath);

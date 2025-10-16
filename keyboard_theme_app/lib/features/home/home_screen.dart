@@ -4,6 +4,7 @@ import 'package:wallpaperengine/core/services/ad_service.dart';
 import 'package:wallpaperengine/core/services/in_app_update_service.dart';
 import 'package:wallpaperengine/features/detail/detail_screen.dart';
 import 'package:wallpaperengine/features/favorites/favorites_screen.dart';
+import 'package:wallpaperengine/features/settings/keyboard_settings_screen.dart';
 import 'package:wallpaperengine/config/app_config.dart';
 import 'package:wallpaperengine/widgets/shimmer_grid_loading.dart';
 import 'package:wallpaperengine/services/local_wallpaper_service.dart';
@@ -445,6 +446,18 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const KeyboardSettingsScreen(),
+                ),
+              );
+            },
+            tooltip: 'Keyboard Languages',
+          ),
           IconButton(
             icon: Icon(Icons.favorite, color: Colors.red),
             onPressed: () {

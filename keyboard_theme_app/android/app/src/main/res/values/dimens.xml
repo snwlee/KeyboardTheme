@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="keyboard_bottom_min_padding">48dp</dimen>
+    <dimen name="keyboard_row_margin">4dp</dimen>
+    <dimen name="keyboard_key_margin">4dp</dimen>
+    <dimen name="keyboard_key_height">52dp</dimen>
+</resources>

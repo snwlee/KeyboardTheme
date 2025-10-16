@@ -383,6 +383,10 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
 
       if (!mounted) return;
 
+      final successMessage = mode == 'dark'
+          ? 'Dark keyboard theme applied.'
+          : 'Keyboard theme applied to $modeLabel successfully!';
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -391,7 +395,7 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
               SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Keyboard theme applied to $modeLabel successfully!',
+                  successMessage,
                 ),
               ),
             ],
@@ -632,15 +636,6 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
                   ),
                   SizedBox(height: 20),
                   _buildOptionTile(
-                    icon: Icons.wb_sunny_outlined,
-                    title: 'Light Mode',
-                    subtitle: 'Use this theme for the light keyboard',
-                    onTap: () {
-                      Navigator.pop(context);
-                      _applyKeyboardTheme('light', 'Light Mode');
-                    },
-                  ),
-                  _buildOptionTile(
                     icon: Icons.nightlight_outlined,
                     title: 'Dark Mode',
                     subtitle: 'Use this theme for the dark keyboard',
@@ -650,12 +645,12 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
                     },
                   ),
                   _buildOptionTile(
-                    icon: Icons.gradient,
-                    title: 'Both Modes',
-                    subtitle: 'Apply for both light and dark keyboards',
+                    icon: Icons.wb_sunny_outlined,
+                    title: 'Normal Mode',
+                    subtitle: 'Use this theme for the default keyboard look',
                     onTap: () {
                       Navigator.pop(context);
-                      _applyKeyboardTheme('both', 'Both Modes');
+                      _applyKeyboardTheme('light', 'Normal Mode');
                     },
                   ),
                 ],

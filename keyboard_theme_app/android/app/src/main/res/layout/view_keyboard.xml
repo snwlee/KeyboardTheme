@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.inputmethodservice.KeyboardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/keyboard_view"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/keyboard_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:background="@android:color/transparent"
-    android:keyBackground="@drawable/keyboard_key_background"
-    android:keyPreviewLayout="@null"
-    android:keyTextColor="@android:color/white"
-    android:keyTextSize="18sp"
-    android:focusable="true"
-    android:focusableInTouchMode="true" />
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/keyboard_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/keyboard_background_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@null" />
+
+        <com.example.wallpaper_engine.ui.ModernKeyboardView
+            android:id="@+id/keyboard_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/keyboard_bottom_inset"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/keyboard_background_default" />
+</LinearLayout>
