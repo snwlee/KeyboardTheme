@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="10%p"
+    android:keyHeight="60dp"
+    android:horizontalGap="0dp"
+    android:verticalGap="6dp">
+
+    <Row>
+        <Key android:codes="128512" android:keyLabel="😀" />
+        <Key android:codes="128513" android:keyLabel="😁" />
+        <Key android:codes="128514" android:keyLabel="😂" />
+        <Key android:codes="128515" android:keyLabel="😃" />
+        <Key android:codes="128516" android:keyLabel="😄" />
+        <Key android:codes="128517" android:keyLabel="😅" />
+        <Key android:codes="128518" android:keyLabel="😆" />
+        <Key android:codes="128522" android:keyLabel="😊" />
+        <Key android:codes="128525" android:keyLabel="😍" />
+        <Key android:codes="128527" android:keyLabel="😏" />
+    </Row>
+
+    <Row android:horizontalGap="5%p">
+        <Key android:codes="128528" android:keyLabel="😐" />
+        <Key android:codes="128529" android:keyLabel="😑" />
+        <Key android:codes="128530" android:keyLabel="😒" />
+        <Key android:codes="128531" android:keyLabel="😓" />
+        <Key android:codes="128532" android:keyLabel="😔" />
+        <Key android:codes="128533" android:keyLabel="😕" />
+        <Key android:codes="128534" android:keyLabel="😖" />
+        <Key android:codes="128536" android:keyLabel="😘" />
+        <Key android:codes="128538" android:keyLabel="😚" />
+    </Row>
+
+    <Row android:horizontalGap="5%p">
+        <Key android:codes="128540" android:keyLabel="😜" />
+        <Key android:codes="128541" android:keyLabel="😝" />
+        <Key android:codes="128545" android:keyLabel="😡" />
+        <Key android:codes="128546" android:keyLabel="😢" />
+        <Key android:codes="128561" android:keyLabel="😱" />
+        <Key android:codes="128564" android:keyLabel="😴" />
+        <Key android:codes="129299" android:keyLabel="🤓" />
+        <Key android:codes="129303" android:keyLabel="🤗" />
+        <Key android:codes="129315" android:keyLabel="🤣" />
+    </Row>
+
+    <Row>
+        <Key
+            android:codes="-2"
+            android:keyWidth="12%p"
+            android:keyLabel="@string/keyboard_label_letters_toggle" />
+        <Key
+            android:codes="-102"
+            android:keyWidth="12%p"
+            android:keyLabel="😀" />
+        <Key
+            android:codes="-101"
+            android:keyWidth="12%p"
+            android:keyLabel="Lang" />
+        <Key
+            android:codes="32"
+            android:keyWidth="40%p"
+            android:keyIcon="@android:drawable/ic_input_get"
+            android:isRepeatable="true" />
+        <Key
+            android:codes="10"
+            android:keyWidth="24%p"
+            android:keyEdgeFlags="right"
+            android:keyLabel="Enter" />
+    </Row>
+</Keyboard>

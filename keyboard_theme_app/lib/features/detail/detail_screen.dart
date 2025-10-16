@@ -645,12 +645,12 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
                     },
                   ),
                   _buildOptionTile(
-                    icon: Icons.wb_sunny_outlined,
+                    icon: Icons.gradient,
                     title: 'Normal Mode',
-                    subtitle: 'Use this theme for the default keyboard look',
+                    subtitle: 'Transparent (투명) keycaps so the background shows',
                     onTap: () {
                       Navigator.pop(context);
-                      _applyKeyboardTheme('light', 'Normal Mode');
+                      _applyKeyboardTheme('both', 'Normal Mode');
                     },
                   ),
                 ],
