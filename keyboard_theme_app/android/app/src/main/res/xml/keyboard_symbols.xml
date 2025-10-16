@@ -54,11 +54,15 @@
     <Row>
         <Key
             android:codes="-2"
-            android:keyWidth="15%p"
+            android:keyWidth="12%p"
             android:keyLabel="@string/keyboard_label_letters_toggle" />
         <Key
+            android:codes="-101"
+            android:keyWidth="13%p"
+            android:keyLabel="Lang" />
+        <Key
             android:codes="32"
-            android:keyWidth="55%p"
+            android:keyWidth="45%p"
             android:keyIcon="@android:drawable/ic_input_get"
             android:isRepeatable="true" />
         <Key

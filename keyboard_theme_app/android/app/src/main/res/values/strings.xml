@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="live_wallpaper_description">Video Live Wallpaper</string>
-    <string name="keyboard_subtype_label">English (Keyboard Theme)</string>
+    <string name="keyboard_subtype_label_en">English (Keyboard Theme)</string>
+    <string name="keyboard_subtype_label_es">Español (Tema de Teclado)</string>
+    <string name="keyboard_subtype_label_fr">Français (Thème de Clavier)</string>
+    <string name="keyboard_subtype_label_de">Deutsch (Tastaturthema)</string>
+    <string name="keyboard_subtype_label_ja">日本語キーボードテーマ</string>
+    <string name="keyboard_subtype_label_ko">한국어 키보드 테마</string>
     <string name="keyboard_label_symbols_toggle">\?123</string>
     <string name="keyboard_label_letters_toggle">ABC</string>
     <string name="keyboard_label_question_mark">\?</string>

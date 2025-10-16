@@ -773,28 +773,39 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
         backgroundColor: Colors.black,
         body: Stack(
           children: [
-            // Background Image
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: Image.asset(
-                widget.imageUrl,
-                fit: BoxFit.cover,
+            // Background image showcased with wide aspect ratio
+            Positioned.fill(
+              child: Container(color: Colors.black),
+            ),
+            Positioned.fill(
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.asset(
+                      widget.imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
               ),
             ),
 
             // Gradient Overlay - Simplified
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black54,
-                    Colors.transparent,
-                    Colors.black87,
-                  ],
-                  stops: [0.0, 0.5, 1.0],
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black54,
+                      Colors.transparent,
+                      Colors.black87,
+                    ],
+                    stops: [0.0, 0.5, 1.0],
+                  ),
                 ),
               ),
             ),
@@ -898,6 +909,7 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
                           height: 54,
                           child: ElevatedButton(
                             onPressed: _showKeyboardPreview,
+                            onLongPress: _showDownloadOptions,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white.withOpacity(0.2),
                               foregroundColor: Colors.white,

@@ -235,40 +235,41 @@ class _HomeScreenState extends State<HomeScreen> {
     final adService = Provider.of<AdService>(context, listen: false);
 
     // Calculate total items including ads
-    // For every 7 wallpapers, we add 1 native ad
-    final int adsCount = (_wallpapers.length / 7).floor();
+    // For every 5 thumbnails, we add 1 native ad
+    final int adsCount = (_wallpapers.length / 5).floor();
     final int totalItems = _wallpapers.length + adsCount + (_hasMore ? 2 : 0);
 
     return MasonryGridView.count(
       controller: _scrollController,
-      crossAxisCount: 2,
-      mainAxisSpacing: 4,
-      crossAxisSpacing: 4,
+      crossAxisCount: 1,
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 0,
       itemCount: totalItems,
       itemBuilder: (context, index) {
-        // Calculate ad positions: after every 7 items
-        // Ad positions: 7, 15, 23, 31, etc.
-        final int adsBefore = (index / 8).floor();
+        final int adsBefore = (index / 6).floor();
         final int adjustedIndex = index - adsBefore;
 
-        // Check if this position should show an ad
-        final bool isAdPosition = (index + 1) % 8 == 0 && adsBefore < adsCount;
+        final bool isAdPosition = (index + 1) % 6 == 0 && adsBefore < adsCount;
 
         if (isAdPosition) {
-          // Show native ad
-          return adService.createNativeAdWidget(height: 320);
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: adService.createNativeAdWidget(height: 180),
+          );
         }
 
         if (adjustedIndex >= _wallpapers.length) {
-          // Show shimmer loading for next items
-          return Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              child: Container(
-                height: 250,
-                color: Colors.white,
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: Container(
+                  height: 190,
+                  color: Colors.white,
+                ),
               ),
             ),
           );
@@ -279,98 +280,126 @@ class _HomeScreenState extends State<HomeScreen> {
         final themeAssetPath = wallpaper.themeAssetPath;
         final isSquare = wallpaper.isSquare;
 
-        // Calculate height based on aspect ratio
-        // Width is screen width / 2, so height needs to maintain aspect ratio
-        final cardHeight = isSquare ? 200.0 : 333.0; // 200 for 1:1, 333 for 9:16 (0.6 ratio)
+        final double aspectRatio = isSquare ? 1.2 : 16 / 9;
 
         return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailScreen(
-                      imageUrl: imageUrl,
-                      themeAssetPath: themeAssetPath,
-                    ),
-                  ),
-                );
-              },
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SizedBox(
-                  height: cardHeight,
-                  child: Stack(
-                    children: [
-                      Image.asset(
-                        imageUrl,
-                        fit: isSquare ? BoxFit.contain : BoxFit.cover,
-                        width: double.infinity,
-                        height: cardHeight,
-                        cacheWidth: 350,
-                        cacheHeight: isSquare ? 350 : 583,
-                      ),
-                      // Tags for square images
-                      if (isSquare)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Profile',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      // Favorite button
-                      Positioned(
-                        bottom: 8,
-                        right: 8,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => _toggleFavorite(imageUrl),
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                _favoriteImages.contains(imageUrl)
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: _favoriteImages.contains(imageUrl)
-                                    ? Colors.red
-                                    : Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailScreen(
+                  imageUrl: imageUrl,
+                  themeAssetPath: themeAssetPath,
                 ),
               ),
             );
+          },
+          child: Card(
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            elevation: 3,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: AspectRatio(
+              aspectRatio: aspectRatio,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.35),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.keyboard, color: Colors.white, size: 14),
+                          SizedBox(width: 6),
+                          Text(
+                            'Keyboard Theme',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    child: _buildThemeInfoChip(),
+                  ),
+                  Positioned(
+                    bottom: 12,
+                    right: 12,
+                    child: InkWell(
+                      onTap: () => _toggleFavorite(imageUrl),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          _favoriteImages.contains(imageUrl)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: _favoriteImages.contains(imageUrl)
+                              ? Colors.redAccent
+                              : Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       },
     );
   }
 
+  Widget _buildThemeInfoChip() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.15)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.style_outlined, color: Colors.white, size: 14),
+          SizedBox(width: 6),
+          Text(
+            'Theme Ready',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   Future<bool> _onWillPop() async {
     final bool? result = await showDialog<bool>(
       context: context,

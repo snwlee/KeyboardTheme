@@ -34,6 +34,7 @@ class MainActivity : FlutterActivity() {
         const val CURRENT_DARK_THEME_PATH_KEY = "current_dark_theme_path"
         const val CURRENT_LIGHT_THEME_ASSET_KEY = "current_light_theme_asset"
         const val CURRENT_DARK_THEME_ASSET_KEY = "current_dark_theme_asset"
+        const val CURRENT_LANGUAGE_KEY = "current_language_tag"
     }
 
     override fun getRenderMode(): RenderMode {
