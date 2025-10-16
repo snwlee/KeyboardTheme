@@ -1,0 +1,13 @@
+{
+  "flavorName": "main",
+  "packageName": "keyboard.keyboardtheme.free.theme.custom.personalkeyboard",
+  "appName": "Keyboard Theme",
+  "assetPrefix": "assets/common",
+  "primaryColor": "#512DA8",
+  "keyboardLocales": ["en", "ko"],
+  "admob": {
+    "appId": "ca-app-pub-xxxxxxxxxxxxxxxx~default",
+    "bannerId": "ca-app-pub-xxxxxxxxxxxxxxxx/mainBanner",
+    "interstitialId": "ca-app-pub-xxxxxxxxxxxxxxxx/mainInterstitial"
+  }
+}

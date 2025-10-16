@@ -27,9 +27,9 @@ class _KeyboardThemeAppState extends State<KeyboardThemeApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: widget.config.appTitle,
+      title: widget.config.appName,
       onGenerateTitle: (context) =>
-          AppLocalizations.of(context)?.appTitle ?? widget.config.appTitle,
+          AppLocalizations.of(context)?.appTitle ?? widget.config.appName,
       locale: _overrideLocale,
       localizationsDelegates: const [
         AppLocalizations.delegate,

@@ -75,11 +75,12 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Flavor',
+                    'Flavor metadata',
                     style: theme.textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
-                  Text('Name: ${config.flavorName}'),
+                  Text('Flavor key: ${config.flavorName}'),
+                  Text('App name: ${config.appName}'),
                   Text('Package: ${config.packageName}'),
                   Text('Assets root: ${config.assetPrefix}'),
                 ],

@@ -1,0 +1,13 @@
+{
+  "flavorName": "blackpink",
+  "packageName": "keyboard.keyboardtheme.free.theme.custom.personalkeyboard.blackpink",
+  "appName": "BLACKPINK Keyboard",
+  "assetPrefix": "assets/blackpink",
+  "primaryColor": "#880E4F",
+  "keyboardLocales": ["ko", "en", "th"],
+  "admob": {
+    "appId": "ca-app-pub-xxxxxxxxxxxxxxxx~blackpink",
+    "bannerId": "ca-app-pub-xxxxxxxxxxxxxxxx/blackpinkBanner",
+    "interstitialId": "ca-app-pub-xxxxxxxxxxxxxxxx/blackpinkInterstitial"
+  }
+}

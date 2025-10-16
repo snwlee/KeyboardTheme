@@ -1,3 +1,19 @@
+import groovy.json.JsonSlurper
+
+fun loadFlavorConfig(flavor: String? = null): Map<String, *> {
+    val path = if (flavor != null) {
+        "src/$flavor/res/raw/config.json"
+    } else {
+        "src/main/res/raw/config.json"
+    }
+    val configFile = file(path)
+    require(configFile.exists()) {
+        "Missing config file for ${flavor ?: "main"} flavor at $path"
+    }
+    @Suppress("UNCHECKED_CAST")
+    return JsonSlurper().parse(configFile) as Map<String, *>
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -6,7 +22,8 @@ plugins {
 }
 
 android {
-    namespace = "keyboard.keyboardtheme.free.theme.custom.personalkeyboard"
+    val baseConfig = loadFlavorConfig()
+    namespace = baseConfig["packageName"].toString()
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,15 +37,16 @@ android {
     }
 
     defaultConfig {
-        applicationId = "keyboard.keyboardtheme.free.theme.custom.personalkeyboard"
+        val admob = baseConfig["admob"] as Map<*, *>
+        applicationId = baseConfig["packageName"].toString()
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        resValue("string", "app_name", "Keyboard Theme")
-        manifestPlaceholders["admobAppId"] = "ca-app-pub-xxxxxxxxxxxxxxxx~default"
+        resValue("string", "app_name", baseConfig["appName"].toString())
+        manifestPlaceholders["admobAppId"] = admob["appId"].toString()
     }
 
     flavorDimensions += "brand"
@@ -36,15 +54,19 @@ android {
     productFlavors {
         create("kpopdemon") {
             dimension = "brand"
-            applicationId = "keyboard.keyboardtheme.free.theme.custom.personalkeyboard.kpopdemon"
-            resValue("string", "app_name", "KPOP Demon Keyboard")
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-xxxxxxxxxxxxxxxx~kpopdemon"
+            val config = loadFlavorConfig(name)
+            val admob = config["admob"] as Map<*, *>
+            applicationId = config["packageName"].toString()
+            resValue("string", "app_name", config["appName"].toString())
+            manifestPlaceholders["admobAppId"] = admob["appId"].toString()
         }
         create("blackpink") {
             dimension = "brand"
-            applicationId = "keyboard.keyboardtheme.free.theme.custom.personalkeyboard.blackpink"
-            resValue("string", "app_name", "BLACKPINK Keyboard")
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-xxxxxxxxxxxxxxxx~blackpink"
+            val config = loadFlavorConfig(name)
+            val admob = config["admob"] as Map<*, *>
+            applicationId = config["packageName"].toString()
+            resValue("string", "app_name", config["appName"].toString())
+            manifestPlaceholders["admobAppId"] = admob["appId"].toString()
         }
     }
 
