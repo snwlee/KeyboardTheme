@@ -9,7 +9,5 @@
     android:keyPreviewLayout="@null"
     android:keyTextColor="@android:color/white"
     android:keyTextSize="18sp"
-    android:horizontalFadingEdgeEnabled="false"
-    android:verticalFadingEdgeEnabled="false"
     android:focusable="true"
     android:focusableInTouchMode="true" />
