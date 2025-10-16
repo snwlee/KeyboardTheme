@@ -1,6 +1,6 @@
 {
-    "name": "keyboard_theme_app",
-    "short_name": "keyboard_theme_app",
+    "name": "wallpaper_engine",
+    "short_name": "wallpaper_engine",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

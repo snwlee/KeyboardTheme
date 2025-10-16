@@ -1,0 +1,14 @@
+{
+  "flavor": "kedehun",
+  "themeColor": "#2196F3",
+  "apiUrl": "http://10.0.2.2:8080/api/wallpapers?brand=kedehun",
+  "logoLightPath": "assets/kedehun/logo_black.png",
+  "logoDarkPath": "assets/kedehun/logo_white.png",
+  "admobSettings": {
+    "bannerAdUnitId": "ca-app-pub-6294755768841981/2462412424",
+    "interstitialAdUnitId": "ca-app-pub-6294755768841981/8748726971",
+    "appOpenAdUnitId": "ca-app-pub-6294755768841981/6657357045",
+    "rewardedAdUnitId": "ca-app-pub-6294755768841981/7329426410",
+    "nativeAdUnitId": "ca-app-pub-6294755768841981/3832227003"
+  }
+}

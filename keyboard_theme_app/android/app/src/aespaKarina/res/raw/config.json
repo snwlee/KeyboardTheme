@@ -1,0 +1,14 @@
+{
+  "flavor": "aespaKarina",
+  "themeColor": "#9C27B0",
+  "apiUrl": "http://10.0.2.2:8080/api/wallpapers?brand=aespaKarina",
+  "logoLightPath": "assets/aespaKarina/logo_black.png",
+  "logoDarkPath": "assets/aespaKarina/logo_white.png",
+  "admobSettings": {
+    "bannerAdUnitId": "ca-app-pub-6294755768841981/8268809858",
+    "interstitialAdUnitId": "ca-app-pub-6294755768841981/9300612509",
+    "appOpenAdUnitId": "ca-app-pub-6294755768841981/1100943888",
+    "rewardedAdUnitId": "ca-app-pub-6294755768841981/4896185836",
+    "nativeAdUnitId": "ca-app-pub-6294755768841981/1867041662"
+  }
+}

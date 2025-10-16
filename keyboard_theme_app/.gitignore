@@ -43,3 +43,15 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Multi-brand / Flavor-specific security files
+# Keystore files - NEVER commit these!
+android/app/keystore/*.jks
+*.jks
+
+# Keystore properties - NEVER commit real credentials!
+android/key_*.properties
+!android/key_*.properties.example
+
+# Keep the default key.properties in gitignore
+android/key.properties

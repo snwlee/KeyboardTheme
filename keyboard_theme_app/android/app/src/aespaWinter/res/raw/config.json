@@ -1,0 +1,14 @@
+{
+  "flavor": "aespaWinter",
+  "themeColor": "#E91E63",
+  "apiUrl": "http://10.0.2.2:8080/api/wallpapers?brand=aespaWinter",
+  "logoLightPath": "assets/aespaWinter/logo_black.png",
+  "logoDarkPath": "assets/aespaWinter/logo_white.png",
+  "admobSettings": {
+    "bannerAdUnitId": "ca-app-pub-6294755768841981/1679991409",
+    "interstitialAdUnitId": "ca-app-pub-6294755768841981/7355307146",
+    "appOpenAdUnitId": "ca-app-pub-6294755768841981/6020214176",
+    "rewardedAdUnitId": "ca-app-pub-6294755768841981/6215655294",
+    "nativeAdUnitId": "ca-app-pub-6294755768841981/5514997851"
+  }
+}

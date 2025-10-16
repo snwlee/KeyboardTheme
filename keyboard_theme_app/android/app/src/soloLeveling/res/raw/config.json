@@ -1,0 +1,14 @@
+{
+  "flavor": "soloLeveling",
+  "themeColor": "#673AB7",
+  "apiUrl": "http://10.0.2.2:8080/api/wallpapers?brand=soloLeveling",
+  "logoLightPath": "assets/soloLeveling/logo_black.png",
+  "logoDarkPath": "assets/soloLeveling/logo_white.png",
+  "admobSettings": {
+    "bannerAdUnitId": "ca-app-pub-6294755768841981/7131784162",
+    "interstitialAdUnitId": "ca-app-pub-6294755768841981/8385673007",
+    "appOpenAdUnitId": "ca-app-pub-6294755768841981/5818702496",
+    "rewardedAdUnitId": "ca-app-pub-6294755768841981/1144960314",
+    "nativeAdUnitId": "ca-app-pub-6294755768841981/2968725563"
+  }
+}
