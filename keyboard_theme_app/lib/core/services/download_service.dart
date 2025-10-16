@@ -8,7 +8,7 @@ import 'package:wallpaperengine/core/services/review_service.dart';
 
 class DownloadService {
   static final ReviewService _reviewService = ReviewService();
-  static Future<bool> downloadWallpaper(String assetPath, BuildContext context) async {
+  static Future<bool> downloadKeyboardTheme(String assetPath, BuildContext context) async {
     try {
       // Request storage permission based on Android version
       bool hasPermission = false;
@@ -65,7 +65,7 @@ class DownloadService {
                 ),
               ),
               SizedBox(width: 12),
-              Text('Downloading wallpaper...'),
+              Text('Downloading theme...'),
             ],
           ),
           duration: Duration(seconds: 2),
@@ -100,7 +100,7 @@ class DownloadService {
       // Generate filename from asset path
       final originalFileName = assetPath.split('/').last;
       final fileExtension = originalFileName.split('.').last;
-      final fileName = 'wallpaper_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
+      final fileName = 'keyboard_theme_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
       final filePath = '${directory.path}/$fileName';
 
       // Write file
@@ -122,7 +122,7 @@ class DownloadService {
             children: [
               Icon(Icons.error, color: Colors.white),
               SizedBox(width: 12),
-              Expanded(child: Text('Download failed: ${e.toString()}')),
+              Expanded(child: Text('Theme download failed: ${e.toString()}')),
             ],
           ),
           backgroundColor: Colors.red,

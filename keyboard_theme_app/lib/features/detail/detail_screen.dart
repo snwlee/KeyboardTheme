@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:wallpaperengine/core/services/wallpaper_service.dart';
+import 'package:wallpaperengine/core/services/keyboard_theme_service.dart';
 import 'package:wallpaperengine/core/services/ad_service.dart';
 import 'package:wallpaperengine/core/services/download_service.dart';
 import 'package:wallpaperengine/services/favorites_service.dart';
@@ -23,6 +23,7 @@ class _DetailScreenState extends State<DetailScreen> {
   bool _isLoading = false;
   bool _isFavorite = false;
   final FavoritesService _favoritesService = FavoritesService();
+  final KeyboardThemeService _keyboardThemeService = KeyboardThemeService();
 
   @override
   void initState() {
@@ -30,11 +31,11 @@ class _DetailScreenState extends State<DetailScreen> {
     _checkFavoriteStatus();
 
     // Preload interstitial ad when entering detail screen
-    // This ensures ad is ready when user sets wallpaper
+    // This ensures ad is ready when the user applies a keyboard theme
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final adService = Provider.of<AdService>(context, listen: false);
       if (!adService.isInterstitialAdReady) {
-        debugPrint('Preloading interstitial ad for wallpaper setting');
+        debugPrint('Preloading interstitial ad for keyboard theme application');
       }
     });
   }
@@ -79,45 +80,32 @@ class _DetailScreenState extends State<DetailScreen> {
     super.dispose();
   }
 
-  Future<bool> _setWallpaper(int wallpaperType) async {
-    if (!mounted) return false;
+  Future<void> _applyKeyboardTheme(String mode, String modeLabel) async {
+    if (!mounted) return;
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final WallpaperService wallpaperService = WallpaperService();
-      await wallpaperService.setWallpaper(widget.imageUrl, wallpaperType);
-      return true;
-    } catch (e) {
-      // In case of an error, you might want to log it.
-      debugPrint('Failed to set wallpaper: $e');
-      return false;
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
+      await _keyboardThemeService.applyKeyboardTheme(
+        widget.imageUrl,
+        mode: mode,
+      );
 
-  Future<void> _applyWallpaper(int wallpaperType, String typeName) async {
-    // Set wallpaper first
-    final success = await _setWallpaper(wallpaperType);
+      if (!mounted) return;
 
-    if (!mounted) return;
-
-    // Show toast immediately after wallpaper setting completes
-    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 12),
-              Expanded(child: Text('Wallpaper applied to $typeName successfully!')),
+              Expanded(
+                child: Text(
+                  'Keyboard theme applied to $modeLabel successfully!',
+                ),
+              ),
             ],
           ),
           backgroundColor: Colors.green,
@@ -126,14 +114,18 @@ class _DetailScreenState extends State<DetailScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
-    } else {
+    } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
               Icon(Icons.error, color: Colors.white),
               SizedBox(width: 12),
-              Expanded(child: Text('Failed to set wallpaper.')),
+              Expanded(
+                child: Text('Failed to apply keyboard theme.'),
+              ),
             ],
           ),
           backgroundColor: Colors.red,
@@ -142,6 +134,12 @@ class _DetailScreenState extends State<DetailScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -175,7 +173,7 @@ class _DetailScreenState extends State<DetailScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Download Wallpaper',
+                    'Download Theme',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -186,7 +184,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   _buildOptionTile(
                     icon: Icons.download_rounded,
                     title: 'Download',
-                    subtitle: 'Download this wallpaper',
+                    subtitle: 'Download this keyboard theme',
                     onTap: () async {
                       Navigator.pop(context);
                       // 2. 다운로드 수행
@@ -215,7 +213,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
     try {
       // 2. 다운로드 수행
-      await DownloadService.downloadWallpaper(widget.imageUrl, context);
+      await DownloadService.downloadKeyboardTheme(widget.imageUrl, context);
 
       // 3. 보상형 광고 수행
       if (adService.isRewardedAdReady) {
@@ -244,7 +242,7 @@ class _DetailScreenState extends State<DetailScreen> {
               children: [
                 Icon(Icons.error, color: Colors.white),
                 SizedBox(width: 12),
-                Expanded(child: Text('Download failed: $e')),
+                Expanded(child: Text('Theme download failed: $e')),
               ],
             ),
             backgroundColor: Colors.red,
@@ -265,7 +263,7 @@ class _DetailScreenState extends State<DetailScreen> {
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 12),
-              Text('Wallpaper downloaded successfully!'),
+              Text('Keyboard theme downloaded successfully!'),
             ],
           ),
           backgroundColor: Colors.green,
@@ -278,15 +276,15 @@ class _DetailScreenState extends State<DetailScreen> {
     }
   }
 
-  void _showWallpaperOptions() {
+  void _showKeyboardThemeOptions() {
     final AdService adService = Provider.of<AdService>(context, listen: false);
 
     // Show bottom sheet first (it will be behind the ad)
-    _showWallpaperOptionsBottomSheet();
+    _showKeyboardThemeOptionsBottomSheet();
 
     // Then show interstitial ad on top
     if (adService.isInterstitialAdReady) {
-      debugPrint('Showing interstitial ad over wallpaper options bottom sheet');
+      debugPrint('Showing interstitial ad over keyboard theme options bottom sheet');
       // Add small delay to ensure bottom sheet is rendered first
       Future.delayed(Duration(milliseconds: 300), () {
         adService.showInterstitialAd(() {
@@ -295,12 +293,12 @@ class _DetailScreenState extends State<DetailScreen> {
         });
       });
     } else {
-      debugPrint('Interstitial ad not ready, showing wallpaper options directly');
+      debugPrint('Interstitial ad not ready, showing keyboard theme options directly');
       // Bottom sheet is already shown, no ad needed
     }
   }
 
-  void _showWallpaperOptionsBottomSheet() {
+  void _showKeyboardThemeOptionsBottomSheet() {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -326,7 +324,7 @@ class _DetailScreenState extends State<DetailScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Set as Wallpaper',
+                    'Apply Keyboard Theme',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -335,30 +333,30 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                   SizedBox(height: 20),
                   _buildOptionTile(
-                    icon: Icons.home_outlined,
-                    title: 'Home Screen',
-                    subtitle: 'Set as home screen wallpaper',
+                    icon: Icons.wb_sunny_outlined,
+                    title: 'Light Mode',
+                    subtitle: 'Use this theme for the light keyboard',
                     onTap: () {
                       Navigator.pop(context);
-                      _applyWallpaper(1, 'Home Screen');
+                      _applyKeyboardTheme('light', 'Light Mode');
                     },
                   ),
                   _buildOptionTile(
-                    icon: Icons.lock_outline,
-                    title: 'Lock Screen',
-                    subtitle: 'Set as lock screen wallpaper',
+                    icon: Icons.nightlight_outlined,
+                    title: 'Dark Mode',
+                    subtitle: 'Use this theme for the dark keyboard',
                     onTap: () {
                       Navigator.pop(context);
-                      _applyWallpaper(2, 'Lock Screen');
+                      _applyKeyboardTheme('dark', 'Dark Mode');
                     },
                   ),
                   _buildOptionTile(
-                    icon: Icons.devices,
-                    title: 'Both Screens',
-                    subtitle: 'Set as wallpaper for both screens',
+                    icon: Icons.gradient,
+                    title: 'Both Modes',
+                    subtitle: 'Apply for both light and dark keyboards',
                     onTap: () {
                       Navigator.pop(context);
-                      _applyWallpaper(3, 'Both Screens');
+                      _applyKeyboardTheme('both', 'Both Modes');
                     },
                   ),
                 ],
@@ -617,9 +615,9 @@ class _DetailScreenState extends State<DetailScreen> {
                         SizedBox(width: 12),
                         Expanded(
                           child: _buildActionButton(
-                            icon: Icons.wallpaper_rounded,
-                            label: _isLoading ? 'Applying...' : 'Set Wallpaper',
-                            onPressed: _isLoading ? null : _showWallpaperOptions,
+                            icon: Icons.keyboard_alt_rounded,
+                            label: _isLoading ? 'Applying...' : 'Apply Theme',
+                            onPressed: _isLoading ? null : _showKeyboardThemeOptions,
                             isPrimary: true,
                             isLoading: _isLoading,
                           ),
@@ -658,7 +656,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         CircularProgressIndicator(),
                         SizedBox(height: 16),
                         Text(
-                          'Setting wallpaper...',
+                          'Applying keyboard theme...',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -731,4 +729,3 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 }
-

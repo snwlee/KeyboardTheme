@@ -66,7 +66,7 @@ class AppConfig {
     if (_instance != null) return; // Already initialized
 
     try {
-      const platform = MethodChannel('com.snwlee.wallpaperengine/resources');
+      const platform = MethodChannel('com.snwlee.keyboardtheme/resources');
       
       // Fetch both config.json and app_name from native in parallel
       final results = await Future.wait([
@@ -94,7 +94,7 @@ class AppConfig {
       print('Falling back to a default configuration.');
       _instance = AppConfig._(
         flavor: 'default',
-        appName: 'Wallpaper App',
+        appName: 'Keyboard Theme App',
         themeColor: Colors.blue,
         apiUrl: '',
         logoLightPath: '',
