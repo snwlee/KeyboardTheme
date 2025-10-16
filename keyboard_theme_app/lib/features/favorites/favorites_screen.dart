@@ -287,8 +287,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderSt
 }
 
   String _deriveThemeAssetPath(String previewPath) {
-    if (previewPath.contains('/wallpapers/')) {
-      return previewPath.replaceFirst('/wallpapers/', '/keyboard_themes/');
+    if (previewPath.contains('/thumbnails/')) {
+      return previewPath.replaceFirst('/thumbnails/', '/keyboard_themes/');
     }
     return previewPath;
   }

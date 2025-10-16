@@ -33,7 +33,7 @@ class WallpaperResponse {
       if (themeList != null && themeList.length > i) {
         theme = themeList[i] as String?;
       }
-      theme ??= preview.replaceFirst('/wallpapers/', '/keyboard_themes/');
+      theme ??= preview.replaceFirst('/thumbnails/', '/keyboard_themes/');
       wallpapers.add(
         LocalWallpaper(
           imagePath: preview,

@@ -68,7 +68,7 @@ class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver
         ),
         child: SafeArea(
           top: false,
-          child: Padding(
+          child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(20, 16, 20, 32),
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -28,12 +28,12 @@ class LocalWallpaperService {
     final manifestContent = await rootBundle.loadString('AssetManifest.json');
     final Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
-    // Look for wallpapers in flavor-specific directory: assets/{flavor}/wallpapers/
-    final flavorWallpapersPath = 'assets/$flavor/wallpapers/';
-    print('Looking for wallpapers in: $flavorWallpapersPath');
+    // Look for preview thumbnails in flavor-specific directory: assets/{flavor}/thumbnails/
+    final flavorThumbnailsPath = 'assets/$flavor/thumbnails/';
+    print('Looking for thumbnails in: $flavorThumbnailsPath');
 
     final List<String> imagePaths = manifestMap.keys
-        .where((String key) => key.startsWith(flavorWallpapersPath))
+        .where((String key) => key.startsWith(flavorThumbnailsPath))
         .where((String key) =>
             key.endsWith('.jpg') ||
             key.endsWith('.png') ||
@@ -53,23 +53,23 @@ class LocalWallpaperService {
 
     final List<LocalWallpaper> wallpapers = imagePaths.map((path) {
       // Extract category from path
-      // Example: assets/kedehun/wallpapers/category1/image.jpg -> category1
-      // Example: assets/kedehun/wallpapers/category1/profile/image.jpg -> category1 (profile)
-      // Example: assets/kedehun/wallpapers/profile/image.jpg -> profile image (no category)
+      // Example: assets/kedehun/thumbnails/category1/image.jpg -> category1
+      // Example: assets/kedehun/thumbnails/category1/profile/image.jpg -> category1 (profile)
+      // Example: assets/kedehun/thumbnails/profile/image.jpg -> profile image (no category)
       final parts = path.split('/');
       String specificCategory = '';
       bool isSquare = false;
 
       if (parts.length > 4) {
-        // Path has subdirectory: assets/{flavor}/wallpapers/[category]/image.jpg
+        // Path has subdirectory: assets/{flavor}/thumbnails/[category]/image.jpg
         specificCategory = parts[3];
 
         // Check if it's in a profile subfolder (for square images)
         if (parts.length > 5 && parts[4] == 'profile') {
-          // assets/kedehun/wallpapers/category1/profile/image.jpg
+          // assets/kedehun/thumbnails/category1/profile/image.jpg
           isSquare = true;
         } else if (specificCategory == 'profile') {
-          // assets/kedehun/wallpapers/profile/image.jpg - root profile folder
+          // assets/kedehun/thumbnails/profile/image.jpg - root profile folder
           isSquare = true;
           specificCategory = ''; // No category for root profile images
         } else {
@@ -95,7 +95,7 @@ class LocalWallpaperService {
     if (categoriesFound.isNotEmpty) {
       print('Found categories from folder structure: ${categoriesFound.toList()..sort()}');
     } else {
-      print('No category subdirectories found, all images are in root wallpapers folder');
+      print('No category subdirectories found, all images are in root thumbnails folder');
     }
 
     _cachedWallpapers = wallpapers;
@@ -130,8 +130,8 @@ class LocalWallpaperService {
   }
 
   String _resolveThemeAssetPath(String previewPath, Set<String> themeAssetPaths) {
-    // Replace wallpapers directory with keyboard_themes keeping sub-path intact
-    final candidate = previewPath.replaceFirst('/wallpapers/', '/keyboard_themes/');
+    // Replace thumbnails directory with keyboard_themes keeping sub-path intact
+    final candidate = previewPath.replaceFirst('/thumbnails/', '/keyboard_themes/');
     if (themeAssetPaths.contains(candidate)) {
       return candidate;
     }

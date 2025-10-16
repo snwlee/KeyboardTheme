@@ -72,33 +72,33 @@ flutter:
     # Kedehun flavor
 #    - assets/kedehun/logo_black.png
 #    - assets/kedehun/logo_white.png
-#    - assets/kedehun/wallpapers/
-#    - assets/kedehun/wallpapers/RUMI/
-#    - assets/kedehun/wallpapers/ZOEY/
-#    - assets/kedehun/wallpapers/MIRA/
-#    - assets/kedehun/wallpapers/JINU/
-#    - assets/kedehun/wallpapers/SAJABOYS/
+#    - assets/kedehun/thumbnails/
+#    - assets/kedehun/thumbnails/RUMI/
+#    - assets/kedehun/thumbnails/ZOEY/
+#    - assets/kedehun/thumbnails/MIRA/
+#    - assets/kedehun/thumbnails/JINU/
+#    - assets/kedehun/thumbnails/SAJABOYS/
 
     # Aespa Winter flavor
 #    - assets/aespaWinter/logo_black.png
 #    - assets/aespaWinter/logo_white.png
-#    - assets/aespaWinter/wallpapers/
+#    - assets/aespaWinter/thumbnails/
 
     # Aespa Karina flavor
 #    - assets/aespaKarina/logo_black.png
 #    - assets/aespaKarina/logo_white.png
-#    - assets/aespaKarina/wallpapers/
+#    - assets/aespaKarina/thumbnails/
 
   # Solo Leveling flavor
     - assets/soloLeveling/logo_black.png
     - assets/soloLeveling/logo_white.png
-    - assets/soloLeveling/wallpapers/
+    - assets/soloLeveling/thumbnails/
     - assets/soloLeveling/keyboard_themes/
 
   # Blackpink flavor
 #    - assets/blackpink/logo_black.png
 #    - assets/blackpink/logo_white.png
-#    - assets/blackpink/wallpapers/
+#    - assets/blackpink/thumbnails/
 
 flutter_native_splash:
   color: "#000000"
