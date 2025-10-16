@@ -40,6 +40,12 @@ class LocalWallpaperService {
             key.endsWith('.jpeg'))
         .toList();
 
+    // Capture raw keyboard theme assets that mirror preview filenames
+    final flavorThemesPath = 'assets/$flavor/keyboard_themes/';
+    final Set<String> themeAssetPaths = manifestMap.keys
+        .where((String key) => key.startsWith(flavorThemesPath))
+        .toSet();
+
     print('Found ${imagePaths.length} image paths from assets for flavor: $flavor');
 
     // Extract unique categories from folder structure
@@ -72,8 +78,14 @@ class LocalWallpaperService {
         }
       }
 
+      final String themeAssetPath = _resolveThemeAssetPath(
+        path,
+        themeAssetPaths,
+      );
+
       return LocalWallpaper(
         imagePath: path,
+        themeAssetPath: themeAssetPath,
         category: specificCategory, // Store specific category, empty string if in root
         isSquare: isSquare,
       );
@@ -115,6 +127,25 @@ class LocalWallpaperService {
     _cachedWallpapers = null;
     _shuffledWallpapers = null;
     print('Wallpaper cache cleared');
+  }
+
+  String _resolveThemeAssetPath(String previewPath, Set<String> themeAssetPaths) {
+    // Replace wallpapers directory with keyboard_themes keeping sub-path intact
+    final candidate = previewPath.replaceFirst('/wallpapers/', '/keyboard_themes/');
+    if (themeAssetPaths.contains(candidate)) {
+      return candidate;
+    }
+
+    // Also try collapsing category folder (if keyboard themes stored flat)
+    final fileName = previewPath.split('/').last;
+    for (final path in themeAssetPaths) {
+      if (path.endsWith('/$fileName')) {
+        return path;
+      }
+    }
+
+    // Fallback to preview path if matching theme asset not found
+    return previewPath;
   }
 
 

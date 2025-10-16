@@ -7,7 +7,7 @@ class KeyboardThemeService {
 
   Future<void> applyKeyboardTheme(
     String assetPath, {
-    String mode = 'default',
+    String mode = 'both',
   }) async {
     try {
       final ByteData themeData = await rootBundle.load(assetPath);
@@ -32,6 +32,42 @@ class KeyboardThemeService {
       return path;
     } on PlatformException catch (e) {
       throw Exception('Failed to fetch current keyboard theme: ${e.message}');
+    }
+  }
+
+  Future<void> showKeyboardPicker() async {
+    try {
+      await platform.invokeMethod<void>('showKeyboardPicker');
+    } on PlatformException catch (e) {
+      throw Exception('Failed to show keyboard picker: ${e.message}');
+    }
+  }
+
+  Future<void> openKeyboardSettings() async {
+    try {
+      await platform.invokeMethod<void>('openKeyboardSettings');
+    } on PlatformException catch (e) {
+      throw Exception('Failed to open keyboard settings: ${e.message}');
+    }
+  }
+
+  Future<bool> isKeyboardEnabled() async {
+    try {
+      final bool? enabled =
+          await platform.invokeMethod<bool>('isKeyboardEnabled');
+      return enabled ?? false;
+    } on PlatformException catch (e) {
+      throw Exception('Failed to check keyboard enabled state: ${e.message}');
+    }
+  }
+
+  Future<bool> isKeyboardSelected() async {
+    try {
+      final bool? selected =
+          await platform.invokeMethod<bool>('isKeyboardSelected');
+      return selected ?? false;
+    } on PlatformException catch (e) {
+      throw Exception('Failed to check keyboard selection state: ${e.message}');
     }
   }
 }

@@ -9,26 +9,41 @@ import 'package:wallpaperengine/services/detail_view_counter_service.dart';
 
 class DetailScreen extends StatefulWidget {
   final String imageUrl;
+  final String themeAssetPath;
 
   const DetailScreen({
     Key? key,
     required this.imageUrl,
+    required this.themeAssetPath,
   }) : super(key: key);
 
   @override
   _DetailScreenState createState() => _DetailScreenState();
 }
 
-class _DetailScreenState extends State<DetailScreen> {
+class _DetailScreenState extends State<DetailScreen> with WidgetsBindingObserver {
   bool _isLoading = false;
   bool _isFavorite = false;
+  bool _isKeyboardEnabled = false;
+  bool _isKeyboardSelected = false;
+  bool _hasPromptedKeyboardActivation = false;
   final FavoritesService _favoritesService = FavoritesService();
   final KeyboardThemeService _keyboardThemeService = KeyboardThemeService();
+
+  String get _effectiveThemeAssetPath {
+    final path = widget.themeAssetPath;
+    if (path.isEmpty) {
+      return widget.imageUrl;
+    }
+    return path;
+  }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkFavoriteStatus();
+    _refreshKeyboardStatus();
 
     // Preload interstitial ad when entering detail screen
     // This ensures ad is ready when the user applies a keyboard theme
@@ -40,11 +55,174 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
+  void _showKeyboardActivationSheet() {
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 16, 20, 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 50,
+                    height: 5,
+                    margin: EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                Text(
+                  'Finish Keyboard Setup',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  _isKeyboardEnabled && _isKeyboardSelected
+                      ? 'All set! Your keyboard theme is ready to use.'
+                      : !_isKeyboardEnabled
+                          ? 'Turn on the Keyboard Theme input method in system settings.'
+                          : 'Choose Keyboard Theme as your active keyboard.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                SizedBox(height: 24),
+                _buildOptionTile(
+                  icon: Icons.settings,
+                  title: 'Enable in Settings',
+                  subtitle: 'Open system settings to activate the keyboard',
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _openKeyboardSettings();
+                  },
+                ),
+                _buildOptionTile(
+                  icon: Icons.keyboard,
+                  title: 'Switch Keyboard',
+                  subtitle: 'Pick Keyboard Theme as the current input',
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _showKeyboardPicker();
+                  },
+                ),
+                _buildOptionTile(
+                  icon: Icons.refresh,
+                  title: 'Refresh Status',
+                  subtitle: 'Check if the keyboard is ready',
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _refreshKeyboardStatus().then((_) {
+                      if (!_isKeyboardEnabled || !_isKeyboardSelected) {
+                        _showInfoSnackBar(
+                          'Keyboard not ready yet. Enable and select it to continue.',
+                        );
+                      } else {
+                        _showInfoSnackBar('Keyboard Theme is active.');
+                      }
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openKeyboardSettings() async {
+    try {
+      await _keyboardThemeService.openKeyboardSettings();
+    } catch (e) {
+      if (!mounted) return;
+      _showErrorSnackBar('Unable to open keyboard settings.');
+    }
+  }
+
+  Future<void> _showKeyboardPicker() async {
+    try {
+      await _keyboardThemeService.showKeyboardPicker();
+    } catch (e) {
+      if (!mounted) return;
+      _showErrorSnackBar('Unable to show keyboard picker.');
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.error, color: Colors.white),
+            SizedBox(width: 12),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showInfoSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
   Future<void> _checkFavoriteStatus() async {
     final isFav = await _favoritesService.isFavorite(widget.imageUrl);
     setState(() {
       _isFavorite = isFav;
     });
+  }
+
+  Future<void> _refreshKeyboardStatus() async {
+    try {
+      final enabled = await _keyboardThemeService.isKeyboardEnabled();
+      final selected = await _keyboardThemeService.isKeyboardSelected();
+      if (mounted) {
+        setState(() {
+          _isKeyboardEnabled = enabled;
+          _isKeyboardSelected = selected;
+          if (enabled && selected) {
+            _hasPromptedKeyboardActivation = false;
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to refresh keyboard status: $e');
+    }
   }
 
   Future<void> _toggleFavorite() async {
@@ -77,7 +255,16 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      _refreshKeyboardStatus();
+    }
   }
 
   Future<void> _applyKeyboardTheme(String mode, String modeLabel) async {
@@ -89,9 +276,11 @@ class _DetailScreenState extends State<DetailScreen> {
 
     try {
       await _keyboardThemeService.applyKeyboardTheme(
-        widget.imageUrl,
+        _effectiveThemeAssetPath,
         mode: mode,
       );
+
+      await _refreshKeyboardStatus();
 
       if (!mounted) return;
 
@@ -114,6 +303,17 @@ class _DetailScreenState extends State<DetailScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
+
+      if ((!_isKeyboardEnabled || !_isKeyboardSelected) && !_hasPromptedKeyboardActivation) {
+        setState(() {
+          _hasPromptedKeyboardActivation = true;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _showKeyboardActivationSheet();
+          }
+        });
+      }
     } catch (e) {
       if (!mounted) return;
 
@@ -213,7 +413,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
     try {
       // 2. 다운로드 수행
-      await DownloadService.downloadKeyboardTheme(widget.imageUrl, context);
+      await DownloadService.downloadKeyboardTheme(_effectiveThemeAssetPath, context);
 
       // 3. 보상형 광고 수행
       if (adService.isRewardedAdReady) {
@@ -624,6 +824,43 @@ class _DetailScreenState extends State<DetailScreen> {
                         ),
                       ],
                     ),
+                    if (!_isKeyboardEnabled || !_isKeyboardSelected)
+                      Container(
+                        margin: EdgeInsets.only(top: 16),
+                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white.withOpacity(0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.keyboard, color: Colors.white),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                !_isKeyboardEnabled
+                                    ? 'Enable the Keyboard Theme input method to use this theme.'
+                                    : 'Switch to Keyboard Theme to see your new look.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: _showKeyboardActivationSheet,
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text(
+                                _isKeyboardEnabled ? 'Switch' : 'Enable',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     SizedBox(height: 16),
                     // Bottom Banner Ad
                     Container(

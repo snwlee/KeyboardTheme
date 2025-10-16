@@ -134,7 +134,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderSt
             Navigator.push(
               context,
               PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) => DetailScreen(imageUrl: imagePath),
+                pageBuilder: (context, animation, secondaryAnimation) => DetailScreen(
+                  imageUrl: imagePath,
+                  themeAssetPath: _deriveThemeAssetPath(imagePath),
+                ),
                 transitionDuration: Duration(milliseconds: 300),
                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                   return FadeTransition(opacity: animation, child: child);
@@ -282,3 +285,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderSt
     );
   }
 }
+
+  String _deriveThemeAssetPath(String previewPath) {
+    if (previewPath.contains('/wallpapers/')) {
+      return previewPath.replaceFirst('/wallpapers/', '/keyboard_themes/');
+    }
+    return previewPath;
+  }

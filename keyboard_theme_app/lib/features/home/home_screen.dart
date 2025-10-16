@@ -276,6 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final wallpaper = _wallpapers[adjustedIndex];
         final imageUrl = wallpaper.imagePath;
+        final themeAssetPath = wallpaper.themeAssetPath;
         final isSquare = wallpaper.isSquare;
 
         // Calculate height based on aspect ratio
@@ -289,6 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(
                     builder: (context) => DetailScreen(
                       imageUrl: imageUrl,
+                      themeAssetPath: themeAssetPath,
                     ),
                   ),
                 );

@@ -93,6 +93,7 @@ flutter:
     - assets/soloLeveling/logo_black.png
     - assets/soloLeveling/logo_white.png
     - assets/soloLeveling/wallpapers/
+    - assets/soloLeveling/keyboard_themes/
 
   # Blackpink flavor
 #    - assets/blackpink/logo_black.png
