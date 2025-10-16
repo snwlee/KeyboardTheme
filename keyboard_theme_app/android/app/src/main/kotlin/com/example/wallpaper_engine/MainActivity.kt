@@ -127,8 +127,6 @@ class MainActivity : FlutterActivity() {
                                 withContext(Dispatchers.Main) {
                                     result.success(primaryPath)
                                 }
-
-                                }
                             } catch (e: Exception) {
                                 withContext(Dispatchers.Main) {
                                     result.error(
