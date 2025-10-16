@@ -2,7 +2,7 @@
 <resources>
     <string name="live_wallpaper_description">Video Live Wallpaper</string>
     <string name="keyboard_subtype_label">English (Keyboard Theme)</string>
-    <string name="keyboard_label_symbols_toggle">?123</string>
+    <string name="keyboard_label_symbols_toggle">\?123</string>
     <string name="keyboard_label_letters_toggle">ABC</string>
-    <string name="keyboard_label_question_mark">?</string>
+    <string name="keyboard_label_question_mark">\?</string>
 </resources>
