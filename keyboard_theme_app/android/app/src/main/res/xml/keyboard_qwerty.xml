@@ -54,7 +54,7 @@
         <Key
             android:codes="-2"
             android:keyWidth="15%p"
-            android:keyLabel="&#63;123" />
+            android:keyLabel="@string/keyboard_label_symbols_toggle" />
         <Key
             android:codes="32"
             android:keyWidth="55%p"

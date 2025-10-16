@@ -43,7 +43,7 @@
         <Key android:codes="58" android:keyLabel=":" />
         <Key android:codes="59" android:keyLabel=";" />
         <Key android:codes="47" android:keyLabel="/" />
-        <Key android:codes="63" android:keyLabel="&#63;" />
+        <Key android:codes="63" android:keyLabel="@string/keyboard_label_question_mark" />
         <Key
             android:codes="-5"
             android:keyWidth="14%p"
@@ -55,7 +55,7 @@
         <Key
             android:codes="-2"
             android:keyWidth="15%p"
-            android:keyLabel="ABC" />
+            android:keyLabel="@string/keyboard_label_letters_toggle" />
         <Key
             android:codes="32"
             android:keyWidth="55%p"
