@@ -78,7 +78,9 @@ class KeyboardThemePreview extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          ..._keyRows.map(_buildRow),
+          ..._keyRows.map(
+            (keys) => _buildRow(keys, maxWidthConstraint: MediaQuery.of(context).size.width),
+          ),
           const SizedBox(height: 14),
           _buildSpaceRow(),
         ],
@@ -86,29 +88,41 @@ class KeyboardThemePreview extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(List<String> keys) {
+  Widget _buildRow(List<String> keys, {required double maxWidthConstraint}) {
+    const horizontalSpacing = 8.0;
+    const keyWidth = 46.0;
+    final availableWidth = (maxWidthConstraint - 36).clamp(200, double.infinity);
+    final totalRowWidth = (keys.length * keyWidth) + ((keys.length - 1) * horizontalSpacing);
+    final shouldWrap = totalRowWidth > availableWidth;
+
+    final keyWidgets = keys.map((key) {
+      final isHomeKey = key == 'F' || key == 'J';
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: horizontalSpacing / 2),
+        child: _KeyCap(
+          label: key,
+          textColor: theme.keyTextColor,
+          background: isHomeKey ? theme.accentColor : theme.keyColor,
+          highlight: isHomeKey ? theme.accentColor : theme.secondaryKeyColor,
+        ),
+      );
+    }).toList();
+
+    final child = shouldWrap
+        ? Wrap(
+            alignment: WrapAlignment.center,
+            spacing: horizontalSpacing / 2,
+            runSpacing: 8,
+            children: keyWidgets,
+          )
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: keyWidgets,
+          );
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ...keys.map(
-            (key) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: _KeyCap(
-                label: key,
-                textColor: theme.keyTextColor,
-                background: key == 'F' || key == 'J'
-                    ? theme.accentColor
-                    : theme.keyColor,
-                highlight: key == 'F' || key == 'J'
-                    ? theme.accentColor
-                    : theme.secondaryKeyColor,
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: child,
     );
   }
 

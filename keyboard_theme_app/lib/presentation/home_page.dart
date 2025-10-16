@@ -31,52 +31,68 @@ class HomePage extends StatelessWidget {
         title: Text(config.appName),
         backgroundColor: config.primaryColor.withOpacity(0.15),
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-        children: [
-          Text(
-            l10n.homeMessage,
-            style: theme.textTheme.titleMedium,
-          ),
-          const SizedBox(height: 18),
-          _LanguageSelectorCard(
-            supportedLocales: supportedLocales,
-            activeLocale: activeLocale,
-            onLocaleSelected: onLocaleSelected,
-          ),
-          const SizedBox(height: 28),
-          Text(
-            'Keyboard Themes',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.homeMessage,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 18),
+                  _LanguageSelectorCard(
+                    supportedLocales: supportedLocales,
+                    activeLocale: activeLocale,
+                    onLocaleSelected: onLocaleSelected,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Keyboard Themes',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 14),
           if (keyboardThemes.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32),
-              child: Text(
-                'No keyboard themes configured for this flavor.',
-                style: theme.textTheme.bodyMedium,
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Text(
+                  'No keyboard themes configured for this flavor.',
+                  style: theme.textTheme.bodyMedium,
+                ),
               ),
             )
           else
-            ...keyboardThemes.map(
-              (themeData) => _ThemeCard(
-                config: config,
-                themeData: themeData,
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 18,
+                  childAspectRatio: 0.7,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final themeData = keyboardThemes[index];
+                    return _ThemeCard(
+                      config: config,
+                      themeData: themeData,
+                    );
+                  },
+                  childCount: keyboardThemes.length,
+                ),
               ),
             ),
-          const SizedBox(height: 24),
-          _FlavorMetaCard(config: config),
-          const SizedBox(height: 16),
-          _LocaleListCard(locales: config.keyboardLocales),
-          const SizedBox(height: 16),
-          _AdMobCard(
-            appId: config.admobAppId,
-            bannerId: config.admobBannerId,
-            interstitialId: config.admobInterstitialId,
-          ),
         ],
       ),
     );
@@ -96,7 +112,6 @@ class _ThemeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Card(
-      margin: const EdgeInsets.only(bottom: 20),
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
@@ -115,15 +130,17 @@ class _ThemeCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 280,
-              child: KeyboardThemePreview(
-                theme: themeData,
-                heroTag: themeData.id,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                child: KeyboardThemePreview(
+                  theme: themeData,
+                  heroTag: themeData.id,
+                ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
               child: Text(
                 themeData.name,
                 style: textTheme.titleMedium?.copyWith(
@@ -133,25 +150,49 @@ class _ThemeCard extends StatelessWidget {
             ),
             if (themeData.description != null)
               Padding(
-                padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: Text(
                   themeData.description!,
-                  style: textTheme.bodyMedium,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.bodySmall,
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 0, 18, 20),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Row(
                 children: [
-                  _ColorSwatch(label: 'Base', color: themeData.keyColor),
-                  const SizedBox(width: 12),
-                  _ColorSwatch(label: 'Accent', color: themeData.accentColor),
+                  _ColorChip(color: themeData.keyColor),
+                  const SizedBox(width: 8),
+                  _ColorChip(color: themeData.accentColor),
                   const Spacer(),
-                  const Icon(Icons.chevron_right, color: Colors.white70),
+                  const Icon(Icons.chevron_right_rounded, color: Colors.white70),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ColorChip extends StatelessWidget {
+  const _ColorChip({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 18,
+      width: 18,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.35),
+          width: 1,
         ),
       ),
     );
@@ -173,205 +214,50 @@ class _LanguageSelectorCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              'Interface Language',
-              style: theme.textTheme.titleSmall,
-            ),
-            const SizedBox(height: 12),
-            DropdownButton<Locale>(
-              value: supportedLocales.contains(activeLocale)
-                  ? activeLocale
-                  : supportedLocales.first,
-              items: supportedLocales
-                  .map(
-                    (locale) => DropdownMenuItem<Locale>(
-                      value: locale,
-                      child: Text(_localeLabel(locale)),
+            const Icon(Icons.language, color: Colors.white70),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Interface Language',
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  Text(
+                    _localeLabel(activeLocale),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.white70,
                     ),
-                  )
-                  .toList(),
-              onChanged: onLocaleSelected,
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FlavorMetaCard extends StatelessWidget {
-  const _FlavorMetaCard({required this.config});
-
-  final FlavorConfig config;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Flavor metadata',
-              style: textTheme.titleSmall,
-            ),
-            const SizedBox(height: 10),
-            Text('Flavor key: ${config.flavorName}'),
-            Text('Package: ${config.packageName}'),
-            Text('Assets root: ${config.assetPrefix}'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LocaleListCard extends StatelessWidget {
-  const _LocaleListCard({required this.locales});
-
-  final List<Locale> locales;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Keyboard layouts',
-              style: theme.textTheme.titleSmall,
-            ),
-            const SizedBox(height: 8),
-            ...locales.map(
-              (locale) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.language),
-                title: Text(_localeLabel(locale)),
-                subtitle: Text(locale.toLanguageTag()),
+            DropdownButtonHideUnderline(
+              child: DropdownButton<Locale>(
+                value: supportedLocales.contains(activeLocale)
+                    ? activeLocale
+                    : supportedLocales.first,
+                dropdownColor: Colors.black87,
+                items: supportedLocales
+                    .map(
+                      (locale) => DropdownMenuItem<Locale>(
+                        value: locale,
+                        child: Text(_localeLabel(locale)),
+                      ),
+                    )
+                    .toList(),
+                onChanged: onLocaleSelected,
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _AdMobCard extends StatelessWidget {
-  const _AdMobCard({
-    required this.appId,
-    required this.bannerId,
-    required this.interstitialId,
-  });
-
-  final String appId;
-  final String bannerId;
-  final String interstitialId;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'AdMob configuration',
-              style: textTheme.titleSmall,
-            ),
-            const SizedBox(height: 8),
-            _AdMobRow(label: 'App ID', value: appId),
-            _AdMobRow(label: 'Banner ID', value: bannerId),
-            _AdMobRow(label: 'Interstitial ID', value: interstitialId),
-            const SizedBox(height: 8),
-            Text(
-              'Replace the placeholder values above with production IDs.',
-              style: textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AdMobRow extends StatelessWidget {
-  const _AdMobRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 110,
-            child: Text(
-              label,
-              style: theme.textTheme.bodySmall,
-            ),
-          ),
-          Expanded(
-            child: SelectableText(
-              value,
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ColorSwatch extends StatelessWidget {
-  const _ColorSwatch({
-    required this.label,
-    required this.color,
-  });
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          height: 24,
-          width: 24,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.3),
-              width: 1,
-            ),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
     );
   }
 }
