@@ -6,9 +6,11 @@ class KeyboardThemePreview extends StatelessWidget {
   const KeyboardThemePreview({
     super.key,
     required this.theme,
+    this.heroTag,
   });
 
   final KeyboardThemeData theme;
+  final String? heroTag;
 
   static const List<List<String>> _keyRows = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
@@ -18,6 +20,14 @@ class KeyboardThemePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final content = _buildContent(context);
+    if (heroTag != null) {
+      return Hero(tag: heroTag!, child: content);
+    }
+    return content;
+  }
+
+  Widget _buildContent(BuildContext context) {
     final backgroundDecoration = BoxDecoration(
       color: theme.backgroundColor,
       borderRadius: BorderRadius.circular(32),

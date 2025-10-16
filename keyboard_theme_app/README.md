@@ -32,6 +32,8 @@ Keyboard themes are also declared in the flavor JSON under the `keyboardThemes` 
 ```
 
 `backgroundImage` is resolved relative to the flavor’s `assetPrefix`, so the example above loads `assets/blackpink/background_glow.png`. Add new PNG/graphics per flavor as needed; the preview automatically updates to reflect the configuration.
+
+The home screen renders each theme as a card the user can scroll through. Tapping a card pushes a detail page with an expanded preview, color breakdown, supported keyboard locales, and an “Apply theme” action placeholder.
 ## Localization
 
 The app ships with English and Korean ARB files under `lib/l10n/`. Add new locales by creating another `app_<languageCode>.arb` and re-running the localization tool:
