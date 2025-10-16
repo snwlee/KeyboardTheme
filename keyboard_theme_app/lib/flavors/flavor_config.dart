@@ -50,7 +50,7 @@ class FlavorConfig {
   /// Throws if the platform is unavailable.
   static Future<FlavorConfig> fromPlatform() async {
     if (kIsWeb) {
-      throw const UnsupportedError(
+      throw UnsupportedError(
         'Platform-driven flavor configs are not available on web builds.',
       );
     }
